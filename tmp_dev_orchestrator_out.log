@@ -1,0 +1,26 @@
+[dev] Startup configuration:
+  - Main API:      http://127.0.0.1:5000
+  - Wholesale API: http://127.0.0.1:5002
+  - Vite Client:   http://127.0.0.1:5177
+[dev] main-api started (pid 23512).
+[dev] wholesale-api started (pid 20840).
+[dev] vite-client started (pid 21452).
+[env] Loaded from: D:\WEBSITES\A-MAx New\wholesale-backend\.env
+SMTP_USER: amaxmobile3@gmail.com
+SMTP_PASS: Loaded
+
+> amax-mobile-ecommerce@1.0.0 dev:client
+> vite
+
+[cors] Allowed origins: http://localhost:5177
+[db] Connected (startup).
+MySQL API server running on http://localhost:5002
+[startup] Requested port: 5002. Active port: 5002.
+Port 5177 is in use, trying another one...
+Port 5178 is in use, trying another one...
+Port 5179 is in use, trying another one...
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m1040[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5180[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://10.208.215.101:[1m5180[22m/[39m

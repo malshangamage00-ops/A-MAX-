@@ -1,0 +1,13 @@
+
+> amax-mobile-ecommerce@1.0.0 dev:client
+> vite --host --clearScreen false
+
+Port 5177 is in use, trying another one...
+Port 5178 is in use, trying another one...
+Port 5179 is in use, trying another one...
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m811[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5180[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://10.208.215.101:[1m5180[22m/[39m
+[2m4:36:05 PM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mdynamic-product-filter.html[22m

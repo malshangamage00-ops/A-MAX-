@@ -1,0 +1,477 @@
+npm run dev:dull<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dynamic Product Brand Filter</title>
+  <style>
+    :root {
+      --bg: #eef2f7;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #dbe3ef;
+      --brand: #0ea5e9;
+      --brand-dark: #0369a1;
+      --success: #059669;
+      --danger: #dc2626;
+      --shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background:
+        radial-gradient(circle at 90% 10%, rgba(14, 165, 233, 0.15), transparent 35%),
+        radial-gradient(circle at 10% 80%, rgba(3, 105, 161, 0.12), transparent 35%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px 16px 40px;
+    }
+
+    .page {
+      width: min(1100px, 100%);
+      margin: 0 auto;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.4rem, 2.6vw, 2rem);
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .filters {
+      margin-top: 20px;
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1fr;
+    }
+
+    .field-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    select,
+    input {
+      width: 100%;
+      border: 1px solid #c9d7ea;
+      background: #f8fbff;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.98rem;
+      outline: none;
+      transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+    }
+
+    select:focus,
+    input:focus {
+      border-color: var(--brand);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.16);
+    }
+
+    .add-brand-wrap {
+      display: grid;
+      gap: 8px;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transform: translateY(-6px);
+      pointer-events: none;
+      transition:
+        opacity 0.28s ease,
+        max-height 0.28s ease,
+        transform 0.28s ease;
+    }
+
+    .add-brand-wrap.visible {
+      opacity: 1;
+      max-height: 180px;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .hint {
+      margin: 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .status {
+      min-height: 20px;
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+
+    .status.success {
+      color: var(--success);
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    .results-head {
+      margin: 18px 2px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    .badge {
+      border: 1px solid #bae6fd;
+      background: #ecfeff;
+      color: var(--brand-dark);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-weight: 700;
+      font-size: 0.78rem;
+      letter-spacing: 0.03em;
+    }
+
+    .products {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.11);
+    }
+
+    .card h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+
+    .card .meta {
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin-bottom: 8px;
+    }
+
+    .card .price {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0f766e;
+    }
+
+    .empty {
+      border: 1px dashed #cbd5e1;
+      background: #f8fafc;
+      border-radius: 14px;
+      text-align: center;
+      color: var(--muted);
+      padding: 18px;
+    }
+
+    @media (min-width: 700px) {
+      .filters {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
+
+      .products {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .panel {
+        padding: 26px;
+      }
+
+      .products {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="panel">
+      <h1>Dynamic Product Filter</h1>
+      <p class="subtitle">Filter products by brand and add your own custom brands instantly.</p>
+
+      <div class="filters">
+        <div class="field-group">
+          <label class="label" for="brandSelect">Brand</label>
+          <select id="brandSelect" aria-label="Brand filter"></select>
+        </div>
+
+        <div id="addBrandWrap" class="add-brand-wrap" aria-live="polite">
+          <div class="field-group">
+            <label class="label" for="newBrandInput">Add New Brand</label>
+            <input
+              id="newBrandInput"
+              type="text"
+              maxlength="40"
+              placeholder="Type new brand and press Enter"
+              autocomplete="off"
+            />
+          </div>
+          <p class="hint">Press Enter to save the brand. Duplicate brand names are blocked.</p>
+        </div>
+      </div>
+
+      <p id="statusMessage" class="status" aria-live="polite"></p>
+
+      <div class="results-head">
+        <div id="resultCount">0 products</div>
+        <span id="activeFilterBadge" class="badge">All Brands</span>
+      </div>
+
+      <div id="productGrid" class="products"></div>
+    </section>
+  </main>
+
+  <script>
+    const DEFAULT_BRANDS = ["Apple", "Samsung", "Xiaomi"];
+    const ADD_NEW_VALUE = "__add_new__";
+    const STORAGE_KEY = "ecommerce_custom_brands_v1";
+
+    const PRODUCTS = [
+      { id: 1, name: "iPhone 15 Pro", brand: "Apple", category: "Mobile Phone", price: 479900 },
+      { id: 2, name: "Galaxy S24 Ultra", brand: "Samsung", category: "Mobile Phone", price: 429900 },
+      { id: 3, name: "Xiaomi 14T Pro", brand: "Xiaomi", category: "Mobile Phone", price: 219900 },
+      { id: 4, name: "iPad Air M2", brand: "Apple", category: "Tablet", price: 249900 },
+      { id: 5, name: "Galaxy Tab S9 FE", brand: "Samsung", category: "Tablet", price: 169900 },
+      { id: 6, name: "Redmi Pad SE", brand: "Xiaomi", category: "Tablet", price: 98900 },
+      { id: 7, name: "Apple Watch Series 10", brand: "Apple", category: "Smart Watch", price: 149900 },
+      { id: 8, name: "Galaxy Watch 7", brand: "Samsung", category: "Smart Watch", price: 109900 },
+      { id: 9, name: "Xiaomi Watch 2", brand: "Xiaomi", category: "Smart Watch", price: 74900 }
+    ];
+
+    const brandSelect = document.getElementById("brandSelect");
+    const addBrandWrap = document.getElementById("addBrandWrap");
+    const newBrandInput = document.getElementById("newBrandInput");
+    const statusMessage = document.getElementById("statusMessage");
+    const productGrid = document.getElementById("productGrid");
+    const resultCount = document.getElementById("resultCount");
+    const activeFilterBadge = document.getElementById("activeFilterBadge");
+
+    let customBrands = loadCustomBrands();
+    let selectedBrand = "all";
+
+    function normalizeBrandName(name) {
+      return String(name || "").trim().replace(/\s+/g, " ");
+    }
+
+    function formatLKR(value) {
+      return new Intl.NumberFormat("en-LK", {
+        style: "currency",
+        currency: "LKR",
+        maximumFractionDigits: 0
+      }).format(value);
+    }
+
+    function allBrands() {
+      return [...DEFAULT_BRANDS, ...customBrands];
+    }
+
+    function findBrandIgnoreCase(name) {
+      const target = normalizeBrandName(name).toLowerCase();
+      return allBrands().find((brand) => brand.toLowerCase() === target) || "";
+    }
+
+    function saveCustomBrands() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(customBrands));
+    }
+
+    function loadCustomBrands() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+
+        const seen = new Set(DEFAULT_BRANDS.map((brand) => brand.toLowerCase()));
+        const cleaned = [];
+
+        for (const entry of parsed) {
+          const normalized = normalizeBrandName(entry);
+          const key = normalized.toLowerCase();
+
+          if (!normalized || seen.has(key)) continue;
+
+          seen.add(key);
+          cleaned.push(normalized);
+        }
+
+        return cleaned;
+      } catch {
+        return [];
+      }
+    }
+
+    function setStatus(message, type) {
+      statusMessage.textContent = message;
+      statusMessage.className = "status";
+
+      if (type) {
+        statusMessage.classList.add(type);
+      }
+    }
+
+    function renderBrandSelect() {
+      const current = selectedBrand;
+      brandSelect.innerHTML = "";
+
+      const allOption = new Option("All Brands", "all");
+      brandSelect.add(allOption);
+
+      for (const brand of allBrands()) {
+        brandSelect.add(new Option(brand, brand));
+      }
+
+      brandSelect.add(new Option("+ Add New Brand", ADD_NEW_VALUE));
+
+      const hasCurrent = current === "all" || allBrands().includes(current);
+      selectedBrand = hasCurrent ? current : "all";
+      brandSelect.value = selectedBrand;
+    }
+
+    function renderProducts() {
+      const filtered =
+        selectedBrand === "all"
+          ? PRODUCTS
+          : PRODUCTS.filter((product) => product.brand === selectedBrand);
+
+      productGrid.innerHTML = "";
+      resultCount.textContent = `${filtered.length} product${filtered.length === 1 ? "" : "s"}`;
+      activeFilterBadge.textContent = selectedBrand === "all" ? "All Brands" : selectedBrand;
+
+      if (filtered.length === 0) {
+        productGrid.innerHTML = '<div class="empty">No products found for this brand.</div>';
+        return;
+      }
+
+      for (const product of filtered) {
+        const article = document.createElement("article");
+        article.className = "card";
+        article.innerHTML = `
+          <h3>${product.name}</h3>
+          <div class="meta">${product.brand} � ${product.category}</div>
+          <p class="price">${formatLKR(product.price)}</p>
+        `;
+        productGrid.appendChild(article);
+      }
+    }
+
+    function showAddBrandInput() {
+      addBrandWrap.classList.add("visible");
+      newBrandInput.value = "";
+      setStatus("", "");
+      requestAnimationFrame(() => newBrandInput.focus());
+    }
+
+    function hideAddBrandInput() {
+      addBrandWrap.classList.remove("visible");
+      newBrandInput.value = "";
+    }
+
+    function addBrandFromInput() {
+      const entered = normalizeBrandName(newBrandInput.value);
+
+      if (!entered) {
+        setStatus("Please enter a brand name.", "error");
+        return;
+      }
+
+      const duplicate = findBrandIgnoreCase(entered);
+      if (duplicate) {
+        selectedBrand = duplicate;
+        renderBrandSelect();
+        renderProducts();
+        hideAddBrandInput();
+        setStatus(`"${duplicate}" already exists. Selected existing brand.`, "error");
+        return;
+      }
+
+      customBrands.push(entered);
+      saveCustomBrands();
+
+      selectedBrand = entered;
+      renderBrandSelect();
+      renderProducts();
+      hideAddBrandInput();
+      setStatus(`Brand "${entered}" added successfully.`, "success");
+    }
+
+    brandSelect.addEventListener("change", (event) => {
+      const value = event.target.value;
+
+      if (value === ADD_NEW_VALUE) {
+        brandSelect.value = selectedBrand;
+        showAddBrandInput();
+        return;
+      }
+
+      selectedBrand = value;
+      hideAddBrandInput();
+      setStatus("", "");
+      renderProducts();
+    });
+
+    newBrandInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        addBrandFromInput();
+      }
+
+      if (event.key === "Escape") {
+        hideAddBrandInput();
+        setStatus("Brand input cancelled.", "error");
+      }
+    });
+
+    renderBrandSelect();
+    renderProducts();
+  </script>
+</body>
+</html>
