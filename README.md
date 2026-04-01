@@ -97,11 +97,7 @@ Admin login reset (if credentials are changed/forgotten):
 - Default will be reset to: `admin / admin123`
 
 ## Admin Login
-
 Default credentials (first setup):
-
-- Username: `admin`
-- Password: `admin123`
 
 You can also change credentials from Admin panel -> Security Settings.
 
